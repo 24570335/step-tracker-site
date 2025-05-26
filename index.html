@@ -2,20 +2,49 @@
 <html>
 <head>
   <title>BLE Step Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; padding: 1em; }
+    #log { white-space: pre-wrap; font-family: monospace; border: 1px solid #ccc; padding: 0.5em; height: 100px; overflow-y: scroll; }
+  </style>
 </head>
 <body>
-  <h1>Step 2 Tracker</h1>
-  <button onclick="connect()">Connect</button>
+  <h1>Step Tracker</h1>
+
+  <button onclick="connect()">🔗 Connect to BLE</button>
+  <p><strong>Status:</strong> <span id="status">Not connected</span></p>
+  <p><strong>Subscription:</strong> <span id="subscription">Not subscribed</span></p>
+  <p><strong>Raw BLE Data:</strong> <span id="raw">-</span></p>
   <p><strong>Steps:</strong> <span id="steps">-</span></p>
   <p><strong>Pace:</strong> <span id="pace">-</span></p>
+
+  <div id="log"></div>
 
   <script>
     const serviceUUID = '0000ffe0-0000-1000-8000-00805f9b34fb';
     const notifyUUID  = '0000ffe4-0000-1000-8000-00805f9b34fb';
 
+    let bleDevice = null;
+
+    function setStatus(text) {
+      document.getElementById('status').textContent = text;
+    }
+
+    function setSubscriptionStatus(text) {
+      document.getElementById('subscription').textContent = text;
+    }
+
+    function log(text) {
+      const logDiv = document.getElementById('log');
+      logDiv.textContent += text + '\n';
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
     function parseData(data) {
       const text = new TextDecoder().decode(data);
       console.log('Notification received:', text);
+      document.getElementById('raw').textContent = text;
+      log('Received: ' + text);
 
       const match = text.match(/STEPS:(\d+),PACE:(\w+)/);
       if (match) {
@@ -26,29 +55,41 @@
 
     async function connect() {
       try {
+        setStatus("Requesting device...");
         const device = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
-          optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
+          optionalServices: [serviceUUID]
         });
-    
-        // Explicit reconnect step
-        const server = await device.gatt.connect();
-    
-        const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-        const char = await service.getCharacteristic('0000ffe4-0000-1000-8000-00805f9b34fb');
-    
+
+        bleDevice = device;
+
+        bleDevice.addEventListener('gattserverdisconnected', () => {
+          setStatus("Disconnected");
+          setSubscriptionStatus("Not subscribed");
+          log("Device disconnected");
+        });
+
+        setStatus("Connecting...");
+        const server = await bleDevice.gatt.connect();
+
+        const service = await server.getPrimaryService(serviceUUID);
+        const char = await service.getCharacteristic(notifyUUID);
+
         await char.startNotifications();
         char.addEventListener('characteristicvaluechanged', event => {
           parseData(event.target.value);
         });
-    
-        console.log('Subscribed to notifications.');
+
+        setStatus("Connected");
+        setSubscriptionStatus("Subscribed to FFE4");
+        log("Subscribed to notifications from: " + device.name);
       } catch (err) {
+        setStatus("Connection failed");
+        setSubscriptionStatus("Not subscribed");
         alert('Connection failed: ' + err);
         console.error(err);
       }
     }
-
   </script>
 </body>
 </html>
