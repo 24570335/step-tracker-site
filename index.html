@@ -9,7 +9,7 @@
   </style>
 </head>
 <body>
-  <h1>Step Tracker</h1>
+  <h1>Step 2 Tracker</h1>
   <button onclick="connect()">Connect to BLE</button>
   <button onclick="disconnect()">Disconnect</button>
   <p><strong>Status:</strong> <span id="status">Not connected</span></p>
@@ -20,8 +20,9 @@
   <div id="log"></div>
 
   <script>
-    const serviceUUID = '0000ffe0-0000-1000-8000-00805f9b34fb'; // Verify this
-    const notifyUUID = '0000ffe4-0000-1000-8000-00805f9b34fb'; // Verify this
+    const serviceUUID = '0000ffe0-0000-1000-8000-00805f9b34fb';
+    const notifyUUID = '0000ffe4-0000-1000-8000-00805f9b34fb';
+    const writeUUID = '0000ffe9-0000-1000-8000-00805f9b34fb';
 
     let bleDevice = null;
     let reconnectInterval = null;
@@ -53,8 +54,37 @@
       }
     }
 
+    async function debugGatt(server) {
+      try {
+        const services = await server.getPrimaryServices();
+        for (const service of services) {
+          log(`Service: ${service.uuid}`);
+          const characteristics = await service.getCharacteristics();
+          for (const char of characteristics) {
+            log(`  Characteristic: ${char.uuid}, Properties: ${JSON.stringify(char.properties)}`);
+          }
+        }
+      } catch (err) {
+        log("Failed to list GATT structure: " + err.message);
+      }
+    }
+
+    async function writeToCharacteristic(server) {
+      try {
+        const service = await server.getPrimaryService(serviceUUID);
+        const char = await service.getCharacteristic(writeUUID);
+        const msg = "Hello STM32!\n";
+        await char.writeValue(new TextEncoder().encode(msg));
+        log(`[To STM32] ${msg.trim()}`);
+      } catch (err) {
+        log("Failed to write: " + err.message);
+        console.error("Write error:", err);
+      }
+    }
+
     async function subscribeToNotifications(server) {
       try {
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second delay
         const service = await server.getPrimaryService(serviceUUID);
         const char = await service.getCharacteristic(notifyUUID);
         log(`Characteristic properties: ${JSON.stringify(char.properties)}`);
@@ -74,16 +104,6 @@
         startReconnect();
       }
     }
-    async function listServicesAndCharacteristics(server) {
-      const services = await server.getPrimaryServices();
-      for (const service of services) {
-        log(`Service: ${service.uuid}`);
-        const characteristics = await service.getCharacteristics();
-        for (const char of characteristics) {
-          log(`  Characteristic: ${char.uuid}, Properties: ${JSON.stringify(char.properties)}`);
-        }
-      }
-    }
 
     async function connect() {
       try {
@@ -91,6 +111,11 @@
           log("Already connected.");
           setStatus("Already connected.");
           return;
+        }
+
+        if (bleDevice) {
+          bleDevice.gatt.disconnect();
+          bleDevice = null;
         }
 
         setStatus("Requesting device...");
@@ -109,7 +134,9 @@
 
         setStatus("Connecting...");
         const server = await bleDevice.gatt.connect();
+        await debugGatt(server);
         await subscribeToNotifications(server);
+        await writeToCharacteristic(server);
 
       } catch (err) {
         setStatus("Connection failed: " + err.message);
@@ -138,7 +165,7 @@
       if (!reconnectInterval) {
         log("Starting reconnect attempts every 5 seconds...");
         reconnectInterval = setInterval(async () => {
-          if (!bleDevice) {
+          if (!bleDevice || !bleDevice.gatt.connected) {
             log("Attempting to reconnect...");
             try {
               await connect();
