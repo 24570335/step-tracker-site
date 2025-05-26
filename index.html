@@ -28,24 +28,27 @@
       try {
         const device = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
-          optionalServices: [serviceUUID]
+          optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
         });
-
+    
+        // Explicit reconnect step
         const server = await device.gatt.connect();
-        const service = await server.getPrimaryService(serviceUUID);
-        const char = await service.getCharacteristic(notifyUUID);
-
+    
+        const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+        const char = await service.getCharacteristic('0000ffe4-0000-1000-8000-00805f9b34fb');
+    
         await char.startNotifications();
         char.addEventListener('characteristicvaluechanged', event => {
           parseData(event.target.value);
         });
-
+    
         console.log('Subscribed to notifications.');
       } catch (err) {
         alert('Connection failed: ' + err);
         console.error(err);
       }
     }
+
   </script>
 </body>
 </html>
