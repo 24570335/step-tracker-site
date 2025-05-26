@@ -9,7 +9,7 @@
   </style>
 </head>
 <body>
-  <h1>Step Tracker</h1>
+  <h1>Step 3 Tracker</h1>
 
   <button onclick="connect()">Connect to BLE</button>
   <button onclick="disconnect()">Disconnect</button>
@@ -18,7 +18,6 @@
   <p><strong>Raw BLE Data:</strong> <span id="raw">-</span></p>
   <p><strong>Steps:</strong> <span id="steps">-</span></p>
   <p><strong>Pace:</strong> <span id="pace">-</span></p>
-  
 
   <div id="log"></div>
 
@@ -54,37 +53,9 @@
         document.getElementById('pace').textContent = match[2];
       }
     }
-    function disconnect() {
-      if (bleDevice && bleDevice.gatt.connected) {
-        bleDevice.gatt.disconnect();
-        setStatus("Disconnected by user");
-        setSubscriptionStatus("Not subscribed");
-        log("Disconnected from device.");
-      } else {
-        alert("No device is currently connected.");
-      }
-    }
 
-
-    async function connect() {
+    async function subscribeToNotifications(server) {
       try {
-        setStatus("Requesting device...");
-        const device = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
-          optionalServices: [serviceUUID]
-        });
-
-        bleDevice = device;
-
-        bleDevice.addEventListener('gattserverdisconnected', () => {
-          setStatus("Disconnected");
-          setSubscriptionStatus("Not subscribed");
-          log("Device disconnected");
-        });
-
-        setStatus("Connecting...");
-        const server = await bleDevice.gatt.connect();
-
         const service = await server.getPrimaryService(serviceUUID);
         const char = await service.getCharacteristic(notifyUUID);
 
@@ -95,13 +66,68 @@
 
         setStatus("Connected");
         setSubscriptionStatus("Subscribed to FFE4");
-        log("Subscribed to notifications from: " + device.name);
+        log("Subscribed to notifications.");
+      } catch (err) {
+        setStatus("Subscription failed");
+        setSubscriptionStatus("Not subscribed");
+        log("Failed to subscribe: " + err);
+        console.error(err);
+      }
+    }
+
+    async function connect() {
+      try {
+        // Already connected check
+        if (bleDevice) {
+          if (bleDevice.gatt.connected) {
+            log("Already connected.");
+            setStatus("Already connected.");
+            return;
+          } else {
+            setStatus("Reconnecting...");
+            const server = await bleDevice.gatt.connect();
+            await subscribeToNotifications(server);
+            return;
+          }
+        }
+
+        setStatus("Requesting device...");
+        bleDevice = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: [serviceUUID]
+        });
+
+        // Handle disconnection
+        bleDevice.addEventListener('gattserverdisconnected', () => {
+          setStatus("Disconnected");
+          setSubscriptionStatus("Not subscribed");
+          log("Device disconnected.");
+          bleDevice = null;
+        });
+
+        setStatus("Connecting...");
+        const server = await bleDevice.gatt.connect();
+        await subscribeToNotifications(server);
+
       } catch (err) {
         setStatus("Connection failed");
         setSubscriptionStatus("Not subscribed");
         alert('Connection failed: ' + err);
         console.error(err);
+        bleDevice = null;
       }
+    }
+
+    function disconnect() {
+      if (bleDevice && bleDevice.gatt.connected) {
+        bleDevice.gatt.disconnect();
+        setStatus("Disconnected by user");
+        setSubscriptionStatus("Not subscribed");
+        log("Disconnected from device.");
+      } else {
+        alert("No device is currently connected.");
+      }
+      bleDevice = null;
     }
   </script>
 </body>
