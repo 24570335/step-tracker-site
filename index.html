@@ -1,29 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BLE Test</title>
+  <title>BLE Step Tracker</title>
 </head>
 <body>
-  <h1>Scan for BLE Devices</h1>
-  <button onclick="scan()"> Start Scan</button>
-  <ul id="devices"></ul>
+  <h1>Step Tracker</h1>
+  <button onclick="connect()">Connect</button>
+  <p><strong>Steps:</strong> <span id="steps">-</span></p>
+  <p><strong>Pace:</strong> <span id="pace">-</span></p>
 
   <script>
-    async function scan() {
+    const serviceUUID = '0000ffe0-0000-1000-8000-00805f9b34fb';
+    const notifyUUID  = '0000ffe4-0000-1000-8000-00805f9b34fb';
+
+    function parseData(data) {
+      const text = new TextDecoder().decode(data);
+      console.log('Notification received:', text);
+
+      const match = text.match(/STEPS:(\d+),PACE:(\w+)/);
+      if (match) {
+        document.getElementById('steps').textContent = match[1];
+        document.getElementById('pace').textContent = match[2];
+      }
+    }
+
+    async function connect() {
       try {
         const device = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true
+          acceptAllDevices: true,
+          optionalServices: [serviceUUID]
         });
-        const el = document.createElement("li");
-        el.textContent = `${device.name || '(no name)'} - ${device.id}`;
-        document.getElementById("devices").appendChild(el);
-        console.log('Found device:', device);
+
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService(serviceUUID);
+        const char = await service.getCharacteristic(notifyUUID);
+
+        await char.startNotifications();
+        char.addEventListener('characteristicvaluechanged', event => {
+          parseData(event.target.value);
+        });
+
+        console.log('Subscribed to notifications.');
       } catch (err) {
-        console.error("Scan failed:", err);
-        alert("Scan failed: " + err);
+        alert('Connection failed: ' + err);
+        console.error(err);
       }
     }
   </script>
 </body>
 </html>
-
