@@ -9,8 +9,7 @@
   </style>
 </head>
 <body>
-  <h1>Step 4 Tracker</h1>
-
+  <h1>Step Tracker</h1>
   <button onclick="connect()">Connect to BLE</button>
   <button onclick="disconnect()">Disconnect</button>
   <p><strong>Status:</strong> <span id="status">Not connected</span></p>
@@ -18,12 +17,11 @@
   <p><strong>Raw BLE Data:</strong> <span id="raw">-</span></p>
   <p><strong>Steps:</strong> <span id="steps">-</span></p>
   <p><strong>Pace:</strong> <span id="pace">-</span></p>
-
   <div id="log"></div>
 
   <script>
-    const serviceUUID = '0000ffe0-0000-1000-8000-00805f9b34fb';
-    const notifyUUID  = '0000ffe4-0000-1000-8000-00805f9b34fb';
+    const serviceUUID = '0000ffe0-0000-1000-8000-00805f9b34fb'; // Verify this
+    const notifyUUID = '0000ffe4-0000-1000-8000-00805f9b34fb'; // Verify this
 
     let bleDevice = null;
     let reconnectInterval = null;
@@ -59,43 +57,45 @@
       try {
         const service = await server.getPrimaryService(serviceUUID);
         const char = await service.getCharacteristic(notifyUUID);
-
+        log(`Characteristic properties: ${JSON.stringify(char.properties)}`);
         await char.startNotifications();
         char.addEventListener('characteristicvaluechanged', event => {
           parseData(event.target.value);
         });
-
         setStatus("Connected");
         setSubscriptionStatus("Subscribed to FFE4");
         log("Subscribed to notifications.");
-        stopReconnect(); // Success — stop retry loop
+        stopReconnect();
       } catch (err) {
-        setStatus("Subscription failed");
+        setStatus("Subscription failed: " + err.message);
         setSubscriptionStatus("Not subscribed");
-        log("Failed to subscribe: " + err);
-        console.error(err);
+        log("Failed to subscribe: " + err.message);
+        console.error("Subscription error:", err);
         startReconnect();
+      }
+    }
+    async function listServicesAndCharacteristics(server) {
+      const services = await server.getPrimaryServices();
+      for (const service of services) {
+        log(`Service: ${service.uuid}`);
+        const characteristics = await service.getCharacteristics();
+        for (const char of characteristics) {
+          log(`  Characteristic: ${char.uuid}, Properties: ${JSON.stringify(char.properties)}`);
+        }
       }
     }
 
     async function connect() {
       try {
-        if (bleDevice) {
-          if (bleDevice.gatt.connected) {
-            log("Already connected.");
-            setStatus("Already connected.");
-            return;
-          } else {
-            setStatus("Reconnecting...");
-            const server = await bleDevice.gatt.connect();
-            await subscribeToNotifications(server);
-            return;
-          }
+        if (bleDevice && bleDevice.gatt.connected) {
+          log("Already connected.");
+          setStatus("Already connected.");
+          return;
         }
 
         setStatus("Requesting device...");
         bleDevice = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
+          filters: [{ services: [serviceUUID] }],
           optionalServices: [serviceUUID]
         });
 
@@ -104,7 +104,7 @@
           setSubscriptionStatus("Not subscribed");
           log("Device disconnected.");
           bleDevice = null;
-          startReconnect(); // retry when lost
+          startReconnect();
         });
 
         setStatus("Connecting...");
@@ -112,10 +112,10 @@
         await subscribeToNotifications(server);
 
       } catch (err) {
-        setStatus("Connection failed");
+        setStatus("Connection failed: " + err.message);
         setSubscriptionStatus("Not subscribed");
-        alert('Connection failed: ' + err);
-        console.error(err);
+        log("Connection failed: " + err.message);
+        console.error("Connection error:", err);
         bleDevice = null;
         startReconnect();
       }
@@ -136,13 +136,17 @@
 
     function startReconnect() {
       if (!reconnectInterval) {
-        log("Starting reconnect attempts every 3 seconds...");
-        reconnectInterval = setInterval(() => {
+        log("Starting reconnect attempts every 5 seconds...");
+        reconnectInterval = setInterval(async () => {
           if (!bleDevice) {
             log("Attempting to reconnect...");
-            connect();
+            try {
+              await connect();
+            } catch (err) {
+              log("Reconnect failed: " + err.message);
+            }
           }
-        }, 3000);
+        }, 5000);
       }
     }
 
