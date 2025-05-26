@@ -11,8 +11,7 @@
   <p><strong>Pace:</strong> <span id="pace">-</span></p>
 
   <script>
-    const serviceUUID = '0000ffe0-0000-1000-8000-00805f9b34fb';
-    const notifyUUID = '0000ffe4-0000-1000-8000-00805f9b34fb';
+
 
     function parseData(data) {
       const text = new TextDecoder().decode(data);
@@ -23,22 +22,28 @@
       }
     }
 
-    async function connect() {
-      try {
-        const device = await navigator.bluetooth.requestDevice({
-          filters: [{ services: [serviceUUID] }]
-        });
-        const server = await device.gatt.connect();
-        const service = await server.getPrimaryService(serviceUUID);
-        const char = await service.getCharacteristic(notifyUUID);
-        await char.startNotifications();
-        char.addEventListener('characteristicvaluechanged', event => {
-          parseData(event.target.value);
-        });
-      } catch (err) {
-        alert('Connection failed: ' + err);
-      }
+   const serviceUUID = '0000ffe0-0000-1000-8000-00805f9b34fb';
+  const notifyUUID = '0000ffe4-0000-1000-8000-00805f9b34fb';
+  
+  async function connect() {
+    try {
+      const device = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+        optionalServices: [serviceUUID]
+      });
+  
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService(serviceUUID);
+      const char = await service.getCharacteristic(notifyUUID);
+      await char.startNotifications();
+      char.addEventListener('characteristicvaluechanged', event => {
+        parseData(event.target.value);
+      });
+    } catch (err) {
+      alert('Connection failed: ' + err);
     }
+  }
+
   </script>
 </body>
 </html>
