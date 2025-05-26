@@ -9,7 +9,7 @@
   </style>
 </head>
 <body>
-  <h1>Step 3 Tracker</h1>
+  <h1>Step 4 Tracker</h1>
 
   <button onclick="connect()">Connect to BLE</button>
   <button onclick="disconnect()">Disconnect</button>
@@ -26,6 +26,7 @@
     const notifyUUID  = '0000ffe4-0000-1000-8000-00805f9b34fb';
 
     let bleDevice = null;
+    let reconnectInterval = null;
 
     function setStatus(text) {
       document.getElementById('status').textContent = text;
@@ -67,17 +68,18 @@
         setStatus("Connected");
         setSubscriptionStatus("Subscribed to FFE4");
         log("Subscribed to notifications.");
+        stopReconnect(); // Success — stop retry loop
       } catch (err) {
         setStatus("Subscription failed");
         setSubscriptionStatus("Not subscribed");
         log("Failed to subscribe: " + err);
         console.error(err);
+        startReconnect();
       }
     }
 
     async function connect() {
       try {
-        // Already connected check
         if (bleDevice) {
           if (bleDevice.gatt.connected) {
             log("Already connected.");
@@ -97,12 +99,12 @@
           optionalServices: [serviceUUID]
         });
 
-        // Handle disconnection
         bleDevice.addEventListener('gattserverdisconnected', () => {
           setStatus("Disconnected");
           setSubscriptionStatus("Not subscribed");
           log("Device disconnected.");
           bleDevice = null;
+          startReconnect(); // retry when lost
         });
 
         setStatus("Connecting...");
@@ -115,6 +117,7 @@
         alert('Connection failed: ' + err);
         console.error(err);
         bleDevice = null;
+        startReconnect();
       }
     }
 
@@ -128,6 +131,27 @@
         alert("No device is currently connected.");
       }
       bleDevice = null;
+      stopReconnect();
+    }
+
+    function startReconnect() {
+      if (!reconnectInterval) {
+        log("Starting reconnect attempts every 3 seconds...");
+        reconnectInterval = setInterval(() => {
+          if (!bleDevice) {
+            log("Attempting to reconnect...");
+            connect();
+          }
+        }, 3000);
+      }
+    }
+
+    function stopReconnect() {
+      if (reconnectInterval) {
+        clearInterval(reconnectInterval);
+        reconnectInterval = null;
+        log("Stopped reconnect attempts.");
+      }
     }
   </script>
 </body>
