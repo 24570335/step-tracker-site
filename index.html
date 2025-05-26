@@ -11,12 +11,14 @@
 <body>
   <h1>Step Tracker</h1>
 
-  <button onclick="connect()">🔗 Connect to BLE</button>
+  <button onclick="connect()">Connect to BLE</button>
+  <button onclick="disconnect()">Disconnect</button>
   <p><strong>Status:</strong> <span id="status">Not connected</span></p>
   <p><strong>Subscription:</strong> <span id="subscription">Not subscribed</span></p>
   <p><strong>Raw BLE Data:</strong> <span id="raw">-</span></p>
   <p><strong>Steps:</strong> <span id="steps">-</span></p>
   <p><strong>Pace:</strong> <span id="pace">-</span></p>
+  
 
   <div id="log"></div>
 
@@ -52,6 +54,17 @@
         document.getElementById('pace').textContent = match[2];
       }
     }
+    function disconnect() {
+      if (bleDevice && bleDevice.gatt.connected) {
+        bleDevice.gatt.disconnect();
+        setStatus("Disconnected by user");
+        setSubscriptionStatus("Not subscribed");
+        log("Disconnected from device.");
+      } else {
+        alert("No device is currently connected.");
+      }
+    }
+
 
     async function connect() {
       try {
