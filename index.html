@@ -64,7 +64,7 @@
   <button onclick="disconnect()">Disconnect</button>
   <p><strong>Status:</strong> <span id="status">Not connected</span></p>
   <p><strong>Subscription:</strong> <span id="subscription">Not subscribed</span></p>
-  <p><strong>Raw BLE Data:</strong> <span id="raw">-</span></p>
+<!--   <p><strong>Raw BLE Data:</strong> <span id="raw">-</span></p> -->
   <p><strong>Steps:</strong> <span id="steps">-</span></p>
   <p><strong>Pace:</strong> <span id="pace">-</span></p>
   <div id="log"></div>
@@ -93,7 +93,7 @@
 
     function parseData(data) {
       const text = new TextDecoder().decode(data);
-      document.getElementById('raw').textContent = text;
+      // document.getElementById('raw').textContent = text;
       log('Received: ' + text);
 
       const match = text.match(/STEPS:(\d+),PACE:(\w+)/);
