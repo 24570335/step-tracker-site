@@ -4,8 +4,58 @@
   <title>BLE Step Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: sans-serif; padding: 1em; }
-    #log { white-space: pre-wrap; font-family: monospace; border: 1px solid #ccc; padding: 0.5em; height: 100px; overflow-y: scroll; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff0f5;
+      color: #5a004f;
+      padding: 2em;
+      max-width: 600px;
+      margin: auto;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(90, 0, 79, 0.2);
+    }
+
+    h1 {
+      color: #d63384;
+      text-align: center;
+    }
+
+    button {
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6em 1.2em;
+      font-size: 1em;
+      margin: 0.5em 0.5em 1em 0;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff4fa0;
+    }
+
+    p {
+      margin: 0.5em 0;
+    }
+
+    #log {
+      white-space: pre-wrap;
+      font-family: monospace;
+      background-color: #ffe6f1;
+      border: 1px solid #ffb6c1;
+      padding: 0.5em;
+      height: 120px;
+      overflow-y: scroll;
+      border-radius: 6px;
+      margin-top: 1em;
+    }
+
+    span {
+      font-weight: bold;
+      color: #c2185b;
+    }
   </style>
 </head>
 <body>
@@ -71,10 +121,8 @@
 
         setStatus("Connecting...");
         const server = await bleDevice.gatt.connect();
-
         const service = await server.getPrimaryService(serviceUUID);
 
-        // Write a hello message
         try {
           const writeChar = await service.getCharacteristic(writeUUID);
           const msg = "Hello STM32!\n";
@@ -84,7 +132,6 @@
           log("Write characteristic not available: " + e.message);
         }
 
-        // Subscribe to notifications
         try {
           const notifyChar = await service.getCharacteristic(notifyUUID);
           await notifyChar.startNotifications();
