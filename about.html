@@ -82,6 +82,13 @@
       color: #ffe6f0;
     }
 
+    .main-nav a.active {
+      background-color: #ffffff;
+      color: #ff69b4;
+      padding: 0.4em 1em;
+      border-radius: 6px;
+    }
+
 
   </style>
 </head>
@@ -89,8 +96,7 @@
 <body>
   <nav class="main-nav">
     <a href="index.html">Home</a>
-    <a href="about.html">About the Team</a>
-    <a href="tracker.html">Step Tracker</a> <!-- or index.html if same -->
+    <a href="about.html" class="active">About the Team</a>
   </nav>
 
   <button onclick="location.href='index.html'" class="home-button">Back to Home</button>
@@ -125,5 +131,18 @@
       <div class="member-role">Power Circuit</div>
       <div class="member-role">Self Test</div>
   </div>
+</div>
+
+<script>
+  const links = document.querySelectorAll(".main-nav a");
+  links.forEach(link => {
+    if (link.href === window.location.href) {
+      link.classList.add("active");
+    }
+  });
+</script>
+
 </body>
 </html>
+
+
