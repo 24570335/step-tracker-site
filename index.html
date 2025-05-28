@@ -73,9 +73,40 @@
       background-color: #ff1493; /* Deep pink */
     }
 
+        .main-nav {
+      background-color: #ff69b4;
+      padding: 0.75em;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 2em;
+    }
+
+    .main-nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin: 0 1em;
+      font-size: 1.1em;
+      transition: color 0.2s;
+    }
+
+    .main-nav a:hover {
+      color: #ffe6f0;
+    }
+
+    .main-nav a.active {
+      background-color: #ffffff;
+      color: #ff69b4;
+      padding: 0.4em 1em;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
+  <nav class="main-nav">
+    <a href="index.html" class="active">Home</a>
+    <a href="about.html">About the Team</a>
+  </nav>
   <h1>Bandwidth Bandits: Step Tracker</h1>
   <button onclick="connect()">Connect to BLE</button>
   <button onclick="disconnect()">Disconnect</button>
@@ -208,5 +239,14 @@
       }
     }
   </script>
+
+  <script>
+  const links = document.querySelectorAll(".main-nav a");
+  links.forEach(link => {
+    if (link.href === window.location.href) {
+      link.classList.add("active");
+    }
+  });
+</script>
 </body>
 </html>
