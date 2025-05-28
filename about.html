@@ -61,10 +61,38 @@
       background-color: #ff1493; /* Deep pink */
     }
 
+    .main-nav {
+      background-color: #ff69b4;
+      padding: 0.75em;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 2em;
+    }
+
+    .main-nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin: 0 1em;
+      font-size: 1.1em;
+      transition: color 0.2s;
+    }
+
+    .main-nav a:hover {
+      color: #ffe6f0;
+    }
+
+
   </style>
 </head>
 
 <body>
+  <nav class="main-nav">
+    <a href="index.html">Home</a>
+    <a href="about.html">About the Team</a>
+    <a href="tracker.html">Step Tracker</a> <!-- or index.html if same -->
+  </nav>
+
   <button onclick="location.href='index.html'" class="home-button">Back to Home</button>
   
   <h1>Meet the Team</h1>
