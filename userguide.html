@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>User Guide</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2em;
+      background: #fff0f5; /* light pink */
+      line-height: 1.6;
+    }
+
+    .main-nav {
+      background-color: #f8c5dd; /* Softer pink */
+      padding: 0.5em;
+      text-align: center;
+      border-radius: 6px;
+      margin-bottom: 1.5em;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .main-nav a {
+      color: #a6005a;               /* Softer text color */
+      background-color: transparent;
+      text-decoration: none;
+      font-weight: bold;
+      margin: 0 0.8em;
+      font-size: 1em;
+      padding: 0.4em 0.8em;
+      border-radius: 4px;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .main-nav a:hover {
+      background-color: #fdd6e8;    /* Light hover background */
+    }
+
+    .main-nav a.active {
+      background-color: white;
+      color: #d63384;
+      border: 1px solid #f5aacb;
+    }
+
+    .home-button {
+      display: inline-block;
+      padding: 12px 24px;
+      font-size: 1rem;
+      background-color: #ff69b4; /* Hot pink */
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      border: none;
+      transition: background-color 0.3s ease;
+      margin-top: 1em;
+    }
+
+    .home-button:hover {
+      background-color: #ff1493; /* Deep pink */
+    }
+
+    h1 {
+      text-align: center;
+      color: #a6005a;
+      margin-bottom: 0.5em;
+    }
+
+    .guide-section {
+      max-width: 800px;
+      margin: 0 auto 2em;
+      background-color: white;
+      padding: 1.5em;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .guide-section h2 {
+      color: #d63384;
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+    }
+
+    .guide-section p {
+      margin-bottom: 1em;
+    }
+
+    .guide-section ul {
+      margin-left: 1.5em;
+      margin-bottom: 1em;
+    }
+
+    .guide-section li {
+      margin-bottom: 0.5em;
+    }
+
+    .note-box {
+      background-color: #fdd6e8;
+      border-left: 4px solid #d63384;
+      padding: 0.8em;
+      margin: 1em 0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="main-nav">
+    <a href="index.html">Home</a>
+    <a href="about.html">About the Team</a>
+    <a href="userguide.html" class="active">User Guide</a>
+  </nav>
+
+  <button onclick="location.href='index.html'" class="home-button">Back to Home</button>
+
+  <h1>Step Tracker: User Guide</h1>
+
+  <div class="guide-section">
+    <h2>1. Introduction</h2>
+    <p>Welcome to your new Step Tracker! This guide will walk you through setting up, calibrating, and using your device to accurately count your steps and monitor your pace. Please follow each section carefully to ensure optimal performance.</p>
+
+    <h2>2. Hardware Overview</h2>
+    <p>The main components you will interact with are:</p>
+    <ul>
+      <li><strong>Microcontroller & Interface</strong>: The STM32G050K8T6 CPU runs all calculations and interfaces with the accelerometer (ADXL335).</li>
+      <li><strong>ADXL335 Accelerometer</strong>: Senses movement on X, Y, and Z axes for step counting and pace detection.</li>
+      <li><strong>Power Circuit</strong>: Includes the 3.3 V regulator, Schottky diode, MOSFET, and 9 V battery connector.</li>
+      <li><strong>User Interface</strong>: OLED display, push buttons, LEDs, and a rotary encoder for navigation and feedback.</li>
+    </ul>
+
+    <div class="note-box">
+      <strong>Note:</strong> Before first use, ensure the 9 V battery is properly connected and the power switch is in the “ON” position.
+    </div>
+
+    <h2>3. Initial Power‐On & Setup</h2>
+    <p>1. Insert a fresh 9 V battery into the clip connector (Item 2.6).<br>
+       2. Slide the power switch (SOT-23 SPDT, Item 13) to the “ON” position.<br>
+       3. The RED LED (Item 8) will blink once to indicate power is applied.<br>
+       4. The OLED display (SSD1306, Item 2.3) will briefly show the startup logo and then move to the main menu.</p>
+
+    <h2>4. Calibration Process</h2>
+    <p>Proper calibration of the ADXL335 is essential to ensure each axis reads ±1 g when placed in the six reference orientations. Follow these steps carefully:</p>
+    <ol>
+      <li><strong>Access Calibration Mode:</strong> From the main menu, rotate the encoder (Item 2.4) to highlight “Calibration,” then press the encoder button to enter.</li>
+      <li><strong>X‐Axis Positive:</strong> The GREEN LED (Item 10) will turn on next to “X+.” Place the device so that the X‐axis is aligned with gravity (pointing straight down or up). Wait 5 seconds until the LED blinks, indicating success.</li>
+      <li><strong>X‐Axis Negative:</strong> The next LED (Item 1) will illuminate for “X−.” Flip the device upside‐down so X reads −1 g. Wait for the LED to blink.</li>
+      <li><strong>Y‐Axis Positive & Negative:</strong> Similarly, follow the on‐screen instruction and LEDs for “Y+” (tilt forward) and “Y−” (tilt backward). After each stable orientation, wait until the LED blinks to proceed.</li>
+      <li><strong>Z‐Axis Positive & Negative:</strong> Finally, rotate so Z‐axis is up (+1 g) then down (−1 g) when prompted. The BLUE LED (Item 9, part of the RGB) or another LED will blink upon success.</li>
+      <li>After all six orientations pass, the display will confirm “Calibration Complete.”</li>
+    </ol>
+    <div class="note-box">
+      <strong>Tip:</strong> Keep the device stationary during each 5-second interval. Any movement during sampling may cause the calibration to fail.
+    </div>
+
+    <h2>5. Step Counting & Pace Identification</h2>
+    <p>Once calibrated, the accelerometer data is processed in real-time to detect each step. The microcontroller runs a filtering algorithm (designed by Sophie) that:</p>
+    <ul>
+      <li>Removes high-frequency noise from raw accelerometer signals.</li>
+      <li>Detects peaks corresponding to foot falls.</li>
+      <li>Calculates cadence (steps per minute) and estimates pace.</li>
+    </ul>
+    <p>To view your current step count and pace:</p>
+    <ol>
+      <li>From the main menu, select “Run Mode” and press the encoder button.</li>
+      <li>The OLED will display:
+        <ul>
+          <li><strong>Steps:</strong> total step count since last reset</li>
+          <li><strong>Pace:</strong> steps/minute</li>
+          <li><strong>Timer:</strong> elapsed time</li>
+        </ul>
+      </li>
+      <li>To pause or reset, press the push‐button switch (Item 20) once. Hold it for 2 seconds to reset the counters to zero.</li>
+    </ol>
+
+    <h2>6. Data Logging to Micro SD</h2>
+    <p>If your version includes an optional <strong>Micro SD Card Connector</strong> (Item 2.1), you can log your step data over time:</p>
+    <ol>
+      <li>Insert a formatted micro SD card into the connector before powering on.</li>
+      <li>In the main menu, select “Data Log,” then press the encoder button.</li>
+      <li>Choose “Start Logging.” The OLED will show a blinking SD icon and timestamped entries (every minute) of:
+        <ul>
+          <li>Total Steps</li>
+          <li>Average Pace (steps/min)</li>
+          <li>Elapsed Time</li>
+        </ul>
+      </li>
+      <li>To stop logging, rotate to “Stop Logging” and press the encoder button.</li>
+      <li>Remove the SD card, insert into your computer, and open the generated CSV file to review your history.</li>
+    </ol>
+    <div class="note-box">
+      <strong>Warning:</strong> Do not remove the card while “Data Log” is active—this may corrupt the file or damage the SD card.
+    </div>
+
+    <h2>7. Power Management & Battery Replacement</h2>
+    <p>The device draws approximately 15 mA in normal run mode (with OLED on). To maximize battery life:</p>
+    <ul>
+      <li>Turn off the device (slide switch off) when not in use.</li>
+      <li>Disable the OLED backlight via “Settings → Display → Backlight = OFF” if you only need step count.</li>
+      <li>Use a high-quality 9 V battery. A typical alkaline battery will last ~20 hours; a rechargeable NiMH will last ~12 hours.</li>
+    </ul>
+    <p>To replace the 9 V battery:</p>
+    <ol>
+      <li>Slide the power switch to “OFF.”</li>
+      <li>Gently pull the clip connector (Item 2.5) off the current battery.</li>
+      <li>Attach a fresh 9 V battery and slide the switch to “ON.”</li>
+      <li>The OLED will briefly display “Battery OK” or “Low Battery” if voltage is below 7 V.</li>
+    </ol>
+
+    <h2>8. Troubleshooting</h2>
+    <h3>8.1. Device Won’t Power On</h3>
+    <ul>
+      <li>Check that the power switch is fully in the “ON” position.</li>
+      <li>Verify the 9 V battery is not depleted—swap in a new battery.</li>
+      <li>Inspect the barrel jack or clip connector for loose wiring or corrosion.</li>
+    </ul>
+
+    <h3>8.2. Calibration Fails or LED Doesn’t Blink</h3>
+    <ul>
+      <li>Ensure the device is completely stationary during each 5 second step.</li>
+      <li>Verify that `mV_zero_g_bias` and sensitivity values in firmware match your specific ADXL335 calibration constants.</li>
+      <li>Make sure the ADXL335 is soldered correctly and not misaligned (all three axes should be orthogonal).</li>
+    </ul>
+
+    <h3>8.3. Steps Not Counting Accurately</h3>
+    <ul>
+      <li>Check the filtering circuit (designed by Sophie). A broken or missing 0.10 µF/4.7 µF capacitor can allow noise to pass through.</li>
+      <li>Ensure that the ADXL335’s V<sub>CC</sub> (3.3 V) and GND are solid—fluctuating supply can produce erratic readings.</li>
+      <li>Adjust the step detection thresholds in firmware if you walk at an uncommon pace—use “Settings → Sensitivity” to fine‐tune.</li>
+    </ul>
+
+    <h3>8.4. OLED Display Is Blank or Flickering</h3>
+    <ul>
+      <li>Make sure the SSD1306 is wired correctly (SCL to PB6, SDA to PB7, V<sub>CC</sub> = 3.3 V, GND common).</li>
+      <li>Inspect solder joints on pins: a cold joint can cause intermittent flicker.</li>
+      <li>If using a newer SSD1306 module, confirm the I²C address matches firmware (typically 0x3C).</li>
+    </ul>
+
+    <h2>9. Firmware Updates & Advanced Features</h2>
+    <p>If you’d like to upgrade to the latest firmware or add custom features:</p>
+    <ol>
+      <li>Download the latest `.bin` or `.hex` from our GitHub repository.</li>
+      <li>Use an ST-LINK/V2 (SWD) or USB-to-UART bootloader to flash the new code into the STM32G050K8T6.</li>
+      <li>Verify the “Calibration” and “Run Mode” commands in the new firmware before daily use.</li>
+    </ol>
+    <p>Advanced users can modify:<br>
+      • Step detection algorithm (located in `<code>step_counter.c</code>`).<br>
+      • OLED menu structure (in `<code>menu.c</code>`).<br>
+      • I²C settings for alternate OLED resolutions.<br>
+    </p>
+
+    <h2>10. Safety & Maintenance</h2>
+    <ul>
+      <li><strong>Avoid moisture:</strong> The PCB is not waterproof. Keep the device away from water and high humidity.</li>
+      <li><strong>Temperature limits:</strong> Operate between 0 °C and +50 °C for best accuracy.</li>
+      <li><strong>Cleaning:</strong> Use a soft, dry cloth. Do not use alcohol or strong solvents on the OLED screen.</li>
+    </ul>
+
+    <h2>11. Contact & Support</h2>
+    <p>If you have questions, bug reports, or feature requests, please reach out to our team via email at <a href="mailto:support@steptracker.com">support@steptracker.com</a> or visit our GitHub issues page:</p>
+    <p><a href="https://github.com/your-username/step-tracker" target="_blank">https://github.com/your-username/step-tracker</a></p>
+  </div>
+
+</body>
+</html>
