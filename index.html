@@ -148,69 +148,69 @@
       logDiv.scrollTop = logDiv.scrollHeight;
     }
 
-    // function parseData(data) {
-    //   const text = new TextDecoder().decode(data);
-    //   // document.getElementById('raw').textContent = text;
-    //   log('Received: ' + text);
-
-    //   const match = text.match(/(\d+),(\d+)/);
-    //   if (match) {
-    //     document.getElementById('steps').textContent = match[1];
-    //     if (match[2] == 0) {
-    //       document.getElementById('pace').textContent = 'stopped';
-    //     } else if (match[2] == 1) {
-    //       document.getElementById('pace').textContent = 'walking';
-    //     } else if (match[2] == 2) {
-    //       document.getElementById('pace').textContent = 'running';
-    //     } 
-      
-    //     // document.getElementById('pace').textContent = match[2];
-    //   }
-    // }
-
     function parseData(data) {
-    // 1) Decode the new chunk into a UTF‐8 string (and trim any stray CR/LF)
-    const chunk = new TextDecoder().decode(data);
-    log("Chunk received: " + chunk);
+      const text = new TextDecoder().decode(data);
+      // document.getElementById('raw').textContent = text;
+      log('Received: ' + text);
 
-    // 2) Append this chunk to the receive buffer
-    recvBuffer += chunk;
-
-    // 3) Now, as long as we see a newline ('\n') in recvBuffer, we can extract
-    //    each complete “line” (ending with '\n') and parse it. Leave any trailing
-    //    partial line in recvBuffer for next time.
-    let newlineIndex;
-    while ((newlineIndex = recvBuffer.indexOf("\n")) >= 0) {
-      // Extract one complete line (up to the newline)
-      const oneLine = recvBuffer.slice(0, newlineIndex).trim();
-      // Remove it (and the '\n') from recvBuffer
-      recvBuffer = recvBuffer.slice(newlineIndex + 1);
-
-      // Now parse that one complete line:
-      parseLine(oneLine);
+      const match = text.match(/STEPS:(\d+),PACE:(\s+)/);
+      if (match) {
+        document.getElementById('steps').textContent = match[1];
+        if (match[2] == "0") {
+          document.getElementById('pace').textContent = 'stopped';
+        } else if (match[2] == "1") {
+          document.getElementById('pace').textContent = 'walking';
+        } else if (match[2] == "2") {
+          document.getElementById('pace').textContent = 'running';
+        } 
+      
+        // document.getElementById('pace').textContent = match[2];
+      }
     }
-  }
 
-  // This helper only handles a single, complete line (no partial data here)
-  function parseLine(text) {
-    log("Parsing complete line: " + text);
+  //   function parseData(data) {
+  //   // 1) Decode the new chunk into a UTF‐8 string (and trim any stray CR/LF)
+  //   const chunk = new TextDecoder().decode(data);
+  //   log("Chunk received: " + chunk);
 
-    // If your payload is “steps,pace” (like "123,1"), split on comma:
-    const parts = text.split(",");
-    if (parts.length >= 2) {
-      const stepsStr = parts[0].trim();
-      const paceStr  = parts[1].trim();
+  //   // 2) Append this chunk to the receive buffer
+  //   recvBuffer += chunk;
 
-      // Update the UI (convert to numbers or translate codes if needed)
-      document.getElementById("steps").textContent = stepsStr;
+  //   // 3) Now, as long as we see a newline ('\n') in recvBuffer, we can extract
+  //   //    each complete “line” (ending with '\n') and parse it. Leave any trailing
+  //   //    partial line in recvBuffer for next time.
+  //   let newlineIndex;
+  //   while ((newlineIndex = recvBuffer.indexOf("\n")) >= 0) {
+  //     // Extract one complete line (up to the newline)
+  //     const oneLine = recvBuffer.slice(0, newlineIndex).trim();
+  //     // Remove it (and the '\n') from recvBuffer
+  //     recvBuffer = recvBuffer.slice(newlineIndex + 1);
 
-      // If pace is “0/1/2” code, you can map it:
-      if (paceStr === "0")       document.getElementById("pace").textContent = "stopped";
-      else if (paceStr === "1")  document.getElementById("pace").textContent = "walking";
-      else if (paceStr === "2")  document.getElementById("pace").textContent = "running";
-      else                       document.getElementById("pace").textContent = paceStr;
-    }
-  }
+  //     // Now parse that one complete line:
+  //     parseLine(oneLine);
+  //   }
+  // }
+
+  // // This helper only handles a single, complete line (no partial data here)
+  // function parseLine(text) {
+  //   log("Parsing complete line: " + text);
+
+  //   // If your payload is “steps,pace” (like "123,1"), split on comma:
+  //   const parts = text.split(",");
+  //   if (parts.length >= 2) {
+  //     const stepsStr = parts[0].trim();
+  //     const paceStr  = parts[1].trim();
+
+  //     // Update the UI (convert to numbers or translate codes if needed)
+  //     document.getElementById("steps").textContent = stepsStr;
+
+  //     // If pace is “0/1/2” code, you can map it:
+  //     if (paceStr === "0")       document.getElementById("pace").textContent = "stopped";
+  //     else if (paceStr === "1")  document.getElementById("pace").textContent = "walking";
+  //     else if (paceStr === "2")  document.getElementById("pace").textContent = "running";
+  //     else                       document.getElementById("pace").textContent = paceStr;
+  //   }
+  // }
 
     async function connect() {
       try {
