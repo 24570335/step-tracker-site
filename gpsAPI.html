@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>GPS</title>
 
-  <!-- Leaflet CSS -->
+  <!-- 1) Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -27,7 +27,7 @@
       color: #333;
     }
 
-    /* Make the map fill most of the viewport width with a fixed height */
+    /* Make the map fill full width, fixed height */
     #map {
       width: 100%;
       height: 400px;
@@ -64,15 +64,15 @@
 <body>
   <h1>Live GPS Leaflet Map</h1>
 
-  <!-- Leaflet map container -->
+  <!-- 2) Leaflet map container -->
   <div id="map"></div>
 
-  <!-- Text box for future data display -->
+  <!-- 3) Text box for future data display (the “bar”) -->
   <div id="data-box">
-    <!-- Placeholder: data (e.g., raw NMEA or parsed lat/lon) will appear here. -->
+    <!-- Placeholder: raw NMEA / parsed lat‐lon or other info will appear here -->
   </div>
 
-  <!-- Leaflet JS -->
+  <!-- 4) Leaflet JS -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-GarzoYj0n7tn4lioejESv4uhjzBlYg1nAzRj2+0h+Yk="
@@ -80,17 +80,26 @@
   ></script>
 
   <script>
-    // Initialise the Leaflet map
+    // Wait until the DOM & Leaflet JS are both loaded
     document.addEventListener("DOMContentLoaded", function () {
-      // Center at [0,0] zoom level 2 for a world view
+      // A) Create the map, centered at [0,0], zoom level 2 (world view)
       const map = L.map("map").setView([0, 0], 2);
 
-      // Use OpenStreetMap tiles
+      // B) Add the OpenStreetMap tile layer
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
         attribution:
           '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
+
+      // C) Place a default Leaflet marker (“pin”) at [0, 0].
+      //    This uses the standard Leaflet marker icon aesthetic.
+      const marker = L.marker([0, 0]).addTo(map);
+      marker.bindPopup("GPS fix will appear here").openPopup();
+
+      // (Optional) If you want the marker hidden until the first GPS fix,
+      // you can do `marker.setOpacity(0);` here and then `marker.setOpacity(1)`
+      // once you have real coordinates. For now, it’s visible at center 0,0.
     });
   </script>
 </body>
