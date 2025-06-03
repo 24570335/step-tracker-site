@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GPS</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-XQoYMqMTK8LvdlxU/UxsaQ7cdtrABmZ+MswFj5RYs+M="
+    crossorigin=""
+  />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 1em 0 0.5em;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    /* Make the map fill most of the viewport width with a fixed height */
+    #map {
+      width: 100%;
+      height: 400px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Container for the data textbox underneath */
+    #data-box {
+      margin: 1em auto;
+      max-width: 800px;
+      padding: 1em;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      font-family: Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 100px;
+      color: #333;
+    }
+
+    #data-box::before {
+      content: "Data Output:";
+      display: block;
+      font-weight: bold;
+      margin-bottom: 0.5em;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Live GPS Leaflet Map</h1>
+
+  <!-- Leaflet map container -->
+  <div id="map"></div>
+
+  <!-- Text box for future data display -->
+  <div id="data-box">
+    <!-- Placeholder: data (e.g., raw NMEA or parsed lat/lon) will appear here. -->
+  </div>
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-GarzoYj0n7tn4lioejESv4uhjzBlYg1nAzRj2+0h+Yk="
+    crossorigin=""
+  ></script>
+
+  <script>
+    // Initialise the Leaflet map
+    document.addEventListener("DOMContentLoaded", function () {
+      // Center at [0,0] zoom level 2 for a world view
+      const map = L.map("map").setView([0, 0], 2);
+
+      // Use OpenStreetMap tiles
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+    });
+  </script>
+</body>
+</html>
