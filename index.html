@@ -153,14 +153,14 @@
       // document.getElementById('raw').textContent = text;
       log('Received: ' + text);
 
-      const match = text.match(/STEPS:(\d+),PACE:(\s+)/);
+      const match = text.match(/STEPS:(\d+),PACE:(\d+)/);
       if (match) {
         document.getElementById('steps').textContent = match[1];
-        if (match[2] == "0") {
+        if (match[2] == 0) {
           document.getElementById('pace').textContent = 'stopped';
-        } else if (match[2] == "1") {
+        } else if (match[2] == 1) {
           document.getElementById('pace').textContent = 'walking';
-        } else if (match[2] == "2") {
+        } else if (match[2] == 2) {
           document.getElementById('pace').textContent = 'running';
         } 
       
