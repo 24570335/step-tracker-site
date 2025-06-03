@@ -94,6 +94,57 @@
       color: #d63384;
       border: 1px solid #f5aacb;
     }
+
+    .presentations {
+      max-width: 900px;
+      margin: 0 auto;                /* center on the page */
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 1.5em;
+    }
+
+    /* Each presentation “card” */
+    .presentation-site {
+      background-color: #ffe4f0;     /* very pale pink */
+      border: 1px solid #f5aacb;     /* soft pink border */
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 1em;
+      width: 240px;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .presentation-site:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Presentation title */
+    .presentation-name {
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-bottom: 0.5em;
+      color: #a6005a; /* deeper pink */
+    }
+
+    /* Link to PDF/Video/etc. */
+    .presentation-link {
+      display: inline-block;
+      margin-top: 0.3em;
+      padding: 0.4em 0.8em;
+      background-color: #ff69b4;    /* Hot pink */
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.2s ease;
+      font-size: 0.95em;
+    }
+
+    .presentation-link:hover {
+      background-color: #ff1493;    /* Deep pink */
+    }
     </style>
 </head>
 
@@ -138,6 +189,20 @@
   </div>
 </div>
 
+<h1>Presentations</h1>
+<div class="Presentations">
+  <div class="presentation-site">
+    <div class="presentation-name">Design Review 4</div>
+      <!-- Link to local PDF in your “presentations/” folder: -->
+      <a
+        href="presentations/DesignReview4.pdf"
+        target="_blank"
+        class="presentation-link"
+      >
+        View PDF
+      </a>
+    </div>
+  </div>
 <script>
   const links = document.querySelectorAll(".main-nav a");
   links.forEach(link => {
