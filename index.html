@@ -153,10 +153,18 @@
       // document.getElementById('raw').textContent = text;
       log('Received: ' + text);
 
-      const match = text.match(/(\d+),(\w+)/);
+      const match = text.match(/(\d+),(\d+)/);
       if (match) {
         document.getElementById('steps').textContent = match[1];
-        document.getElementById('pace').textContent = match[2];
+        if (match[2] == 0) {
+          document.getElementById('pace').textContent = 'stopped';
+        } else if (match[2] == 1) {
+          document.getElementById('pace').textContent = 'walking';
+        } else if (match[2] == 2) {
+          document.getElementById('pace').textContent = 'running';
+        } 
+      
+        // document.getElementById('pace').textContent = match[2];
       }
     }
 
