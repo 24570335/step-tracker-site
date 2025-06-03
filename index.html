@@ -153,7 +153,7 @@
       // document.getElementById('raw').textContent = text;
       log('Received: ' + text);
 
-      const match = text.match(/STEPS:(\d+),PACE:(\w+)/);
+      const match = text.match(/(\d+),(\w+)/);
       if (match) {
         document.getElementById('steps').textContent = match[1];
         document.getElementById('pace').textContent = match[2];
