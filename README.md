@@ -14,7 +14,7 @@ To deploy:
 2. Go to Settings > Pages
 3. Enable GitHub Pages from the `main` branch
 4. Your site will be live at:
-   https://your-username.github.io/step-tracker-site
+   https://24570335.github.io/step-tracker-site
 
 ## BLE Details
 - Service UUID: `0000ffe0-0000-1000-8000-00805f9b34fb`
